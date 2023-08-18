@@ -85,14 +85,17 @@ uint8_t Adafruit_MAX31865::readFault(max31865_fault_cycle_t fault_cycle) {
     cfg_reg &= 0x11; // mask out wire and filter bits
     switch (fault_cycle) {
     case MAX31865_FAULT_AUTO:
-      writeRegister8(MAX31865_CONFIG_REG, (cfg_reg | 0b10000100));
-      delay(1);
+      writeRegister8(MAX31865_CONFIG_REG, (cfg_reg | MAX31865_CONFIG_FAULTCTRL_AUTO));
+      unsigned long starttime = millis();
+      /* wait for fault control bits to indicate cycle finished */
+      while((readRegister8(MAX31865_CONFIG_REG) & MAX31865_CONFIG_FAULTCTRL_BITS) != MAX31865_CONFIG_FAULTCTRL_FINISH && \
+        millis() - starttime < 1); // provide timeout just in case
       break;
     case MAX31865_FAULT_MANUAL_RUN:
-      writeRegister8(MAX31865_CONFIG_REG, (cfg_reg | 0b10001000));
+      writeRegister8(MAX31865_CONFIG_REG, (cfg_reg | MAX31865_CONFIG_FAULTCTRL_MANSTART));
       return 0;
     case MAX31865_FAULT_MANUAL_FINISH:
-      writeRegister8(MAX31865_CONFIG_REG, (cfg_reg | 0b10001100));
+      writeRegister8(MAX31865_CONFIG_REG, (cfg_reg | MAX31865_CONFIG_FAULTCTRL_MANEND));
       return 0;
     case MAX31865_FAULT_NONE:
     default:

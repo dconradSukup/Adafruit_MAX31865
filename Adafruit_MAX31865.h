@@ -28,6 +28,12 @@
 #define MAX31865_CONFIG_FILT50HZ 0x01
 #define MAX31865_CONFIG_FILT60HZ 0x00
 
+#define MAX31865_CONFIG_FAULTCTRL_BITS 0x0C
+#define MAX31865_CONFIG_FAULTCTRL_FINISH 0x00
+#define MAX31865_CONFIG_FAULTCTRL_AUTO 0x84
+#define MAX31865_CONFIG_FAULTCTRL_MANSTART 0x88
+#define MAX31865_CONFIG_FAULTCTRL_MANEND 0x8C
+
 #define MAX31865_RTDMSB_REG 0x01
 #define MAX31865_RTDLSB_REG 0x02
 #define MAX31865_HFAULTMSB_REG 0x03
@@ -93,15 +99,15 @@ public:
   float calculateTemperature(uint16_t RTDraw, float RTDnominal,
                              float refResistor);
 
-private:
-  Adafruit_SPIDevice spi_dev;
-
-  void readRegisterN(uint8_t addr, uint8_t buffer[], uint8_t n);
-
   uint8_t readRegister8(uint8_t addr);
   uint16_t readRegister16(uint8_t addr);
 
   void writeRegister8(uint8_t addr, uint8_t reg);
+
+private:
+  Adafruit_SPIDevice spi_dev;
+
+  void readRegisterN(uint8_t addr, uint8_t buffer[], uint8_t n);
 };
 
 #endif
